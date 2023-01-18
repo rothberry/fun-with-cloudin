@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
   namespace :api do
+    resources :posts
     post '/upload', to: "upload#upload_image"
   end
 end

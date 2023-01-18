@@ -1,6 +1,6 @@
 import { useState, useRef } from "react"
 
-const Form = ({ setDisplayImage }) => {
+const Form = ({ setDisplayImage, setPosts }) => {
 	const [name, setName] = useState("")
 	const [imageFile, setImageFile] = useState(null)
 	const [formData, setFormData] = useState({
@@ -13,17 +13,19 @@ const Form = ({ setDisplayImage }) => {
 		setImageFile(e.target.files[0])
 	}
 
-	const nameRef = useRef()
+	const titleRef = useRef()
+	const contentRef = useRef()
 	const imageRef = useRef()
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
-		console.log({
-			nameRef: nameRef.current.value,
-			imageRef: imageRef.current.files[0],
-		})
+		// console.log({
+		// 	titleRef: titleRef.current.value,
+		// 	imageRef: imageRef.current.files[0],
+		// })
 		let imageData = new FormData()
-		imageData.append("name", nameRef.current.value)
+		imageData.append("title", titleRef.current.value)
+		imageData.append("content", contentRef.current.value)
 		imageData.append("imageFile", imageRef.current.files[0])
 		// console.log(imageData)
 		const postReqObj = {
@@ -33,11 +35,12 @@ const Form = ({ setDisplayImage }) => {
 			},
 			body: imageData,
 		}
-		fetch("http://localhost:3000/api/upload", postReqObj)
+		fetch("http://localhost:3000/api/posts", postReqObj)
 			.then((r) => r.json())
 			.then((data) => {
 				console.log(data)
-        setDisplayImage(data.imageUrl)
+				setPosts((prev) => [data, ...prev])
+				// setDisplayImage(data.imageUrl)
 			})
 			.catch((err) => console.error({ err }))
 	}
@@ -45,13 +48,15 @@ const Form = ({ setDisplayImage }) => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<label>
-				Name:
-				{/* <input type="text" onChange={(e) => setName(e.target.value)} /> */}
-				<input type="text" ref={nameRef} />
+				Title:
+				<input type="text" ref={titleRef} />
+			</label>
+			<label>
+				Content:
+				<textarea type="textarea" ref={contentRef} />
 			</label>
 			<label>
 				Image:
-				{/* <input type="file" onChange={onImageAdded} /> */}
 				<input type="file" ref={imageRef} />
 			</label>
 			<input type="submit" value="UPLOAD IMAGE" />
